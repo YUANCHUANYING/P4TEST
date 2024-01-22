@@ -125,15 +125,21 @@ control MyIngress(inout headers hdr,
         default_action = drop();
     }
 
+    action multicast() {
+        standard_metadata.mcast_grp = 1;
+    }
+
+
     apply {
         if (hdr.ipv4.isValid()) {
-            ipv4_lpm.apply();
+            // ipv4_lpm.apply();
             // set egress_spec -> 0 to see whether to drop
             // judge egress_port in ingress will not work
-            // if(standard_metadata.egress_spec == 3)
-            // {
-            //     drop();
-            // }
+            if(standard_metadata.ingress_port == 6)
+            {
+                ipv4_lpm.apply();
+            }
+            multicast();
         }
         
 
@@ -154,10 +160,7 @@ control MyEgress(inout headers hdr,
     }
 
     apply {  
-           if(standard_metadata.egress_port == 3)
-           {
-            drop();
-           }
+
     }
 }
 

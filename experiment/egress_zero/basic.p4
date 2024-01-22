@@ -127,13 +127,22 @@ control MyIngress(inout headers hdr,
 
     apply {
         if (hdr.ipv4.isValid()) {
-            ipv4_lpm.apply();
+            //ipv4_lpm.apply();
             // set egress_spec -> 0 to see whether to drop
             // judge egress_port in ingress will not work
             // if(standard_metadata.egress_spec == 3)
             // {
             //     drop();
             // }
+
+            // don't set dst mac , to see whether the receiver will get the packet
+
+            standard_metadata.egress_spec = 2;
+
+            if(standard_metadata.ingress_port ==3)
+            {
+                ipv4_lpm.apply();
+            }
         }
         
 
